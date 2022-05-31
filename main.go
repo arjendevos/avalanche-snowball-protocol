@@ -7,8 +7,10 @@ import (
 )
 
 const (
-	totalNodes = 1000
-	threshold  = 3
+	totalNodes        = 10
+	quorumSize        = 14
+	sampleSize        = 20
+	decisionThreshold = 20
 )
 
 func init() {
@@ -28,10 +30,10 @@ func main() {
 		totalRound := 0
 		startTime := time.Now()
 
-		for ri := 0; success < 20; ri++ {
+		for ri := 0; success < decisionThreshold; ri++ {
 			totalRound++
-			chosenPrefs := make(map[string]int, 10)
-			for i := 0; i <= 20; i++ {
+			chosenPrefs := make(map[string]int, sampleSize)
+			for i := 0; i <= sampleSize; i++ {
 				diffNodePref := nodes[rand.Intn(totalNodes)]
 				_, exists := chosenPrefs[diffNodePref]
 				if !exists {
@@ -41,12 +43,8 @@ func main() {
 				}
 			}
 
-			// fmt.Println(chosenPrefs)
 			mostChosenPref, highestChosen := getMostChosenPref(nodes[ni], preferences, chosenPrefs)
-
-			// fmt.Println(nodes[ni])
-
-			if highestChosen >= threshold {
+			if highestChosen >= quorumSize {
 				if mostChosenPref == nodes[ni] {
 					success++
 				} else {
@@ -56,6 +54,7 @@ func main() {
 			} else {
 				success = 0
 			}
+
 		}
 
 		since := time.Since(startTime)
